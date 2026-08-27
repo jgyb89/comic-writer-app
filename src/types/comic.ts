@@ -10,9 +10,6 @@ export interface Block {
   id: string;
   type: BlockType;
   content: string;
-  // Note: Custom properties for "lore integration" and "split-screen data mapping"
-  // were requested by parsing "Comic Writer App", but that file was not found.
-  // Add those properties here if needed.
 }
 
 export interface Panel {

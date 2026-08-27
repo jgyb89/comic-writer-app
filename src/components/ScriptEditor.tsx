@@ -3,9 +3,11 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { ComicBlock } from './ComicBlockExtension';
 import { useScriptStore } from '../store/scriptStore';
+import { parseTiptapToScript } from '../utils/syncUtils';
+import { EditorToolbar } from './EditorToolbar';
 
 export const ScriptEditor: React.FC = () => {
-  const script = useScriptStore(state => state.script);
+  const updateScript = useScriptStore(state => state.updateScript);
 
   const editor = useEditor({
     extensions: [
@@ -21,15 +23,23 @@ export const ScriptEditor: React.FC = () => {
       <p data-type="Dialogue">Where is everyone?</p>
     `,
     onUpdate: ({ editor }) => {
-      // Here you would synchronize editor content to the Zustand store.
-      // For now, we'll leave this as a hook for the syncing logic.
-      // e.g. converting editor.getJSON() to Script blocks
+      const json = editor.getJSON();
+      const script = parseTiptapToScript(json);
+      updateScript(script);
     }
   });
 
+  // Call onUpdate once manually on mount to sync initial content to store if needed,
+  // but for this implementation we rely on the first user action or a useEffect hook.
+
   return (
-    <div className="script-editor-container">
-      <EditorContent editor={editor} />
+    <div className="script-editor-container" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <EditorToolbar />
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+        <EditorContent editor={editor} />
+      </div>
     </div>
   );
 };
+
+
